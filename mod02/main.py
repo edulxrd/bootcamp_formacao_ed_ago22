@@ -158,7 +158,8 @@ test_func()
 import logging
 
 # %%
-# Criando logs
+# Criando logs = log = logging.getLogger()
+#log.setLevel(logging.DEBUG) = tipo de logging que queremos
 # Formatter = Dar um formato. 
 # asctime = hora, dia, mes,etc. Name = Nome do usario
 # Level = nivel da minha informação. message = mensagem
@@ -195,3 +196,4 @@ def test_func(*args, **kargs):
 # %%
 test_func()
 # %%
+
