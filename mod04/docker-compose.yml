@@ -1,0 +1,29 @@
+#environment: variaveis para utilizar no banco de dados como por exemplo, nome de usuario, senha, o banco de dados padrão que irá utilizar
+#A porta padrão do postgre é 5432, vamos utilzar nossa porta 5432 para se conectar a porta padão do banco de dados 5432
+#Utilizamos o comando Volumes para definir a nossa pasta local -- "./db:/var/lib/postgresql/data/" caminho padrão do postgre
+
+#Para executar o arquivo docker-compose, vamos utilizar o comando "docker-compose up db", ele vai criar uma rede, baixar todas as imagens que eu preciso e executar o banco de dados
+# - d depois do docker-compose up db para liberar o acesso ao terminal depois de ativar o servidor 
+#Para encerrar o servidor por completo utilizamos o comando "docker-compose down" Para subir de volta, utilizar "docker-compose up db"
+
+
+version: "3"
+services:
+  db:
+    image: postgres #Imagem do banco de dados postgres
+    container_name: "pg_container"
+    environment: 
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=test_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./db:/var/lib/postgresql/how_data/"
+
+  bi:
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
+    links:
+      - db
