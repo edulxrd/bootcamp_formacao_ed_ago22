@@ -1,0 +1,8 @@
+Started by user [8mha:////4OjQ0EuExyDUVWY4ha6tJKc5SP2mOPgMTVMc9FIwQR6PAAAAlR+LCAAAAAAAAP9b85aBtbiIQTGjNKU4P08vOT+vOD8nVc83PyU1x6OyILUoJzMv2y+/JJUBAhiZGBgqihhk0NSjKDWzXb3RdlLBUSYGJk8GtpzUvPSSDB8G5tKinBIGIZ+sxLJE/ZzEvHT94JKizLx0a6BxUmjGOUNodHsLgAzpEgZO/dLi1CL91JRSANwaBRG+AAAA[0mEduardo Jesus do Nascimento
+Running as SYSTEM
+Building in workspace /var/jenkins_home/workspace/Cambio
+[Cambio] $ /bin/sh -xe /tmp/jenkins17517002819206919630.sh
++ cd /cambio
++ python3 main.py
+Cotação atual: 5.1031
+Finished: SUCCESS
