@@ -1,0 +1,18 @@
+# Para executar algo diretamente do docker utilizamos o comando docker exec -it no terminal seguido do container id seguido do bash para abrir o terminal e -l
+
+version: '3'
+services:
+  jenkins:
+    image: pyjenkins
+    container_name: "jenkins_edu"
+    ports:
+      - "8000:8080"
+      - "50000:50000"
+    volumes:
+    # Mapeando a minha pasta no meu contaner
+      - "./jenkins_home:/var/jenkins_home"
+      - "./cambio:/cambio"
+
+    # Senha para habilitar o jenkins acessando o localhost:8000 == e377c37b4a2849bf876693895c94ebc7
+    # Isso é uma forma simples de criar um servidor, organizar todos nossos processos e executar.
+      

@@ -1,0 +1,10 @@
+# Selecionado a imagem base que vamos utilizar
+FROM jenkins/jenkins
+USER root
+# Run vai executar isso quando eu criar a minha imagem // apt-get é o gerenciador de pacotes do linux
+RUN apt-get update
+# -y para forcar qualquer pergunta de confirmação ser sim 
+RUN apt-get install -y python3-pip
+#Copiando o requirements para ca e rodando para realizar a instalação dos modulos 
+COPY ./cambio/requirements.txt .
+RUN pip install -r requirements.txt

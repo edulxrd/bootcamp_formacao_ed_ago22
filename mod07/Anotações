@@ -1,0 +1,7 @@
+No jenkins cada executor ele é completamente independente. Conseguimos executar eles de forma indipende. E conseguimos definior o numero de executores iremos usar
+
+Dentro das configurações do nosso job, existe uma seleção de gatilho de disparo que podemos configurar
+para executar de forma periodicamente como por exemplo "0 (minuto 0) 10 (da hora 10) * (todos os dias) * (todos os meses) * (todos os anos)
+formato Minuto - hora - dia - mes - ano
+
+https://crontab.guru/ para formatar os horarios mais facil
