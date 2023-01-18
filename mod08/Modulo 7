@@ -1,0 +1,39 @@
+Testes e jenkins 
+
+° Por que testar?
+    ° Ganho de podutividade ao não precisar rodar testes manualmente
+        ° Esqueça os milhares de prints ao longo do codigo
+        ° Testar todo o codigo, não só a nova funcionalidade
+
+    °Tranquilidade de fazer mudanças no código e saber se algo quebrou
+        ° Sem medo de fazer deploy
+
+    ° TESTES SÃO UMA DOCUMENTAÇÃO EXPLICANDO O QUE O CODIGO fazer
+        ° Facilita o trabalho em equipe
+        ° Facilita os reviews de código
+        
+    ° Testes te fazem decobrir bugs que passariam despercebidos
+
+° White box vs Black box
+    °Em testes do tipo black box, o desenvolvedor não conhece o funcionamento interno da aplicação e só testa se a saida é conforme o esperado
+        °Está com pressa de entregar uma funcionalidade? Escreva pelo menos testes do tipo black box
+    
+    °Em testes White box, o desenvolvedor cria testes para todos os mecanismos internos de uma aplicação. É o oposto do black box
+        ° Quer garantir que seu código está robusto e sem bugs? Escreva testes para toda a sua aplicação
+
+° Testes unitarios, Testes de integração e funcionais
+    ° Um teste unitário, como o nome dia, vai testar uma unidade de código: Uma função, metodo ou classe, de forma isolada das outras partes do codigo
+
+    ° Um teste de integração vai interagir com sistemas externos, por exemplo uma API, ou um banco de dados. Esses tipo de testes vai garantir que as conexões estão funcionando como o esperado.
+
+    ° Finalmente, os testes funcionais tentam replicar o que um usuário vai de fato ver, digitar e clicar. Não são muito comuns em engenharia de dados e geralmente são do tipo black box
+
+
+° Parametrização de Testes
+° fixtures
+° mocks/patches e money patches
+
+° Cobertura de testes 
+    Usar python -m pytest --cov=mercado_bitcoin tests/ para ter um percentual do que está testado nos arquivos
+
+° jenkins
