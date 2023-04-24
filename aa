@@ -1,55 +1,49 @@
-public static void GridView(DataTable dataTable, HttpResponse Response, string idfile, string delimiter = ";")
-        {
+If String.IsNullOrEmpty(idfile) Then
+    idfile = "export"
+End If
 
-            if (String.IsNullOrEmpty(idfile))
-                idfile = "export";
+Dim FileName As String = $"{idfile}_" & DateTime.Now & ".csv"
 
-            string FileName = $"{idfile}_" + DateTime.Now + ".csv";
+Dim sb As New StringBuilder()
 
-            StringBuilder sb = new StringBuilder();
+Dim auxLine As String = ""
+For Each column As DataColumn In dataTable.Columns
+    auxLine &= $"{column.ColumnName}{delimiter}"
+Next
 
-            string auxLine = "";
-            foreach(DataColumn column in dataTable.Columns)
-                auxLine += $"{column.ColumnName}{delimiter}";
+sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1))
 
-            sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1));
+Dim dataStr As String = ""
+For Each row As DataRow In dataTable.Rows
+    auxLine = ""
+    For Each dataValue In row.ItemArray
+        dataStr = dataValue.ToString()
 
-            string dataStr = "";
-            foreach(DataRow row in dataTable.Rows)
-            {
-                auxLine = "";
-                foreach (var dataValue in row.ItemArray)
-                {
-                    dataStr = dataValue.ToString();
+        dataStr = dataStr.Replace("""", """""")
 
-                    dataStr = dataStr.Replace("\"", "\"\"");
+        If Regex.IsMatch(dataStr, $"[{delimiter}""\n]") Then
+            dataStr = $"""{dataStr}"""
+        End If
 
-                    if (Regex.IsMatch(dataStr, $@"[{delimiter}""\n]"))
-                        dataStr = $"\"{dataStr}\"";
+        auxLine &= $"{dataStr}{delimiter}"
+    Next
 
-                    auxLine += $"{dataStr}{delimiter}";
-                }
+    sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1))
+Next
 
-                sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1));
-            }
+response.Clear()
+response.Buffer = True
+response.ClearContent()
+response.ClearHeaders()
+response.Charset = ""
+response.ContentEncoding = Encoding.GetEncoding("windows-1252")
 
-            Response.Clear();
-            Response.Buffer = true;
-            Response.ClearContent();
-            Response.ClearHeaders();
-            Response.Charset = "";
-            Response.ContentEncoding = Encoding.GetEncoding("windows-1252");
+response.Cache.SetCacheability(HttpCacheability.NoCache)
+response.ContentType = "text/csv"
+response.AddHeader("Content-Disposition", "attachment;filename=" & FileName)
 
-            Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            Response.ContentType = "text/csv";
-            Response.AddHeader("Content-Disposition", "attachment;filename=" + FileName);
+Dim strwritter As New StringWriter(sb)
 
-            StringWriter strwritter = new StringWriter(sb);
-
-            Response.Write(strwritter.ToString());
-            Response.End();
-
-        }
-
-    }
-}
+response.Write(strwritter.ToString())
+response.[End]()
+ 
