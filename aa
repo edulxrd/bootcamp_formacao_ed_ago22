@@ -1,0 +1,55 @@
+public static void GridView(DataTable dataTable, HttpResponse Response, string idfile, string delimiter = ";")
+        {
+
+            if (String.IsNullOrEmpty(idfile))
+                idfile = "export";
+
+            string FileName = $"{idfile}_" + DateTime.Now + ".csv";
+
+            StringBuilder sb = new StringBuilder();
+
+            string auxLine = "";
+            foreach(DataColumn column in dataTable.Columns)
+                auxLine += $"{column.ColumnName}{delimiter}";
+
+            sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1));
+
+            string dataStr = "";
+            foreach(DataRow row in dataTable.Rows)
+            {
+                auxLine = "";
+                foreach (var dataValue in row.ItemArray)
+                {
+                    dataStr = dataValue.ToString();
+
+                    dataStr = dataStr.Replace("\"", "\"\"");
+
+                    if (Regex.IsMatch(dataStr, $@"[{delimiter}""\n]"))
+                        dataStr = $"\"{dataStr}\"";
+
+                    auxLine += $"{dataStr}{delimiter}";
+                }
+
+                sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1));
+            }
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.ClearContent();
+            Response.ClearHeaders();
+            Response.Charset = "";
+            Response.ContentEncoding = Encoding.GetEncoding("windows-1252");
+
+            Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            Response.ContentType = "text/csv";
+            Response.AddHeader("Content-Disposition", "attachment;filename=" + FileName);
+
+            StringWriter strwritter = new StringWriter(sb);
+
+            Response.Write(strwritter.ToString());
+            Response.End();
+
+        }
+
+    }
+}
