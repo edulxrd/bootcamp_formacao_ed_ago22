@@ -1,35 +1,8 @@
-If String.IsNullOrEmpty(idfile) Then
-    idfile = "export"
+If String.IsNullOrEmpty(fileName) Then
+    fileName = "export"
 End If
 
-Dim FileName As String = $"{idfile}_" & DateTime.Now & ".csv"
-
-Dim sb As New StringBuilder()
-
-Dim auxLine As String = ""
-For Each column As DataColumn In dataTable.Columns
-    auxLine &= $"{column.ColumnName}{delimiter}"
-Next
-
-sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1))
-
-Dim dataStr As String = ""
-For Each row As DataRow In dataTable.Rows
-    auxLine = ""
-    For Each dataValue In row.ItemArray
-        dataStr = dataValue.ToString()
-
-        dataStr = dataStr.Replace("""", """""")
-
-        If Regex.IsMatch(dataStr, $"[{delimiter}""\n]") Then
-            dataStr = $"""{dataStr}"""
-        End If
-
-        auxLine &= $"{dataStr}{delimiter}"
-    Next
-
-    sb.AppendLine(auxLine.Substring(0, auxLine.Length - 1))
-Next
+fileName = $"{fileName}_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}.csv"
 
 response.Clear()
 response.Buffer = True
@@ -40,10 +13,30 @@ response.ContentEncoding = Encoding.GetEncoding("windows-1252")
 
 response.Cache.SetCacheability(HttpCacheability.NoCache)
 response.ContentType = "text/csv"
-response.AddHeader("Content-Disposition", "attachment;filename=" & FileName)
+response.AddHeader("Content-Disposition", "attachment;filename=" & fileName)
 
-Dim strwritter As New StringWriter(sb)
+Dim sb As New StringBuilder()
 
-response.Write(strwritter.ToString())
+For i As Integer = 0 To gv.Columns.Count - 1
+    sb.Append($"{gv.Columns(i).HeaderText}{delimiter}")
+Next
+
+sb.AppendLine()
+
+For i As Integer = 0 To gv.Rows.Count - 1
+    For j As Integer = 0 To gv.Columns.Count - 1
+        Dim cellValue As String = gv.Rows(i).Cells(j).Text.Trim()
+        cellValue = cellValue.Replace("""", """""")
+
+        If Regex.IsMatch(cellValue, $"[{delimiter}""\n]") Then
+            cellValue = $"""{cellValue}"""
+        End If
+
+        sb.Append($"{cellValue}{delimiter}")
+    Next
+
+    sb.AppendLine()
+Next
+
+response.Write(sb.ToString())
 response.[End]()
- 
