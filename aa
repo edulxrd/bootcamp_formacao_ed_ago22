@@ -1,28 +1,20 @@
- if (Response.Headers.AllKeys.Contains("Set-Cookie"))
-            {
-                string[] cookies = Response.Headers.Get("Set-Cookie").Split(',');
-                Response.Headers.Remove("Set-Cookie");
+If Response.Headers.AllKeys.Contains("Set-Cookie") Then
+    Dim cookies As String() = Response.Headers.[Get]("Set-Cookie").Split(","c)
+    Response.Headers.Remove("Set-Cookie")
+    Dim cookiePath As String = String.Join("", Request.Url.Segments, 0, Request.Url.Segments.Length - 1)
 
-                string cookiePath = String.Join("", Request.Url.Segments, 0, Request.Url.Segments.Length - 1);
+    For Each cookie As String In cookies
+        Dim newCookie As String = cookie
+        If newCookie.IndexOf("Domain", StringComparison.CurrentCultureIgnoreCase) = -1 Then newCookie += "; Domain=" & Request.Url.Host
 
-                foreach (string cookie in cookies)
-                {
-                    string newCookie = cookie;
-                    if (newCookie.IndexOf("Domain", StringComparison.CurrentCultureIgnoreCase) == -1)
-                        newCookie += "; Domain=" + Request.Url.Host;
+        If newCookie.IndexOf("Path", StringComparison.CurrentCultureIgnoreCase) = -1 Then
+            newCookie += "; Path=" & cookiePath
+        ElseIf Regex.IsMatch(newCookie, "\b[Pp]ath=/;?\B") Then
+            newCookie = Regex.Replace(newCookie, "\b[Pp]ath=/;?\B", "Path=" & cookiePath & (If(newCookie.IndexOf("Path=/;", StringComparison.CurrentCultureIgnoreCase) > -1, ";", "")))
+        End If
 
-                    if (newCookie.IndexOf("Path", StringComparison.CurrentCultureIgnoreCase) == -1)
-                        newCookie += "; Path=" + cookiePath;
-                    else if (Regex.IsMatch(newCookie, @"\b[Pp]ath=/;?\B"))
-                        newCookie = Regex.Replace(newCookie, @"\b[Pp]ath=/;?\B", "Path=" + cookiePath + (newCookie.IndexOf("Path=/;", StringComparison.CurrentCultureIgnoreCase) > -1? ";" : ""));
-
-                    if (newCookie.IndexOf("SameSite", StringComparison.CurrentCultureIgnoreCase) == -1)
-                        newCookie += "; SameSite=Lax";
-
-                    if (Request.IsSecureConnection && newCookie.IndexOf("Secure", StringComparison.CurrentCultureIgnoreCase) == -1)
-                        newCookie += "; Secure";
-                    
-                    Response.AppendHeader("Set-Cookie", newCookie);
-                }
-            }
-        }
+        If newCookie.IndexOf("SameSite", StringComparison.CurrentCultureIgnoreCase) = -1 Then newCookie += "; SameSite=Lax"
+        If Request.IsSecureConnection AndAlso newCookie.IndexOf("Secure", StringComparison.CurrentCultureIgnoreCase) = -1 Then newCookie += "; Secure"
+        Response.AppendHeader("Set-Cookie", newCookie)
+    Next
+End If
