@@ -1,42 +1,28 @@
-If String.IsNullOrEmpty(fileName) Then
-    fileName = "export"
-End If
+ if (Response.Headers.AllKeys.Contains("Set-Cookie"))
+            {
+                string[] cookies = Response.Headers.Get("Set-Cookie").Split(',');
+                Response.Headers.Remove("Set-Cookie");
 
-fileName = $"{fileName}_{DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss")}.csv"
+                string cookiePath = String.Join("", Request.Url.Segments, 0, Request.Url.Segments.Length - 1);
 
-response.Clear()
-response.Buffer = True
-response.ClearContent()
-response.ClearHeaders()
-response.Charset = ""
-response.ContentEncoding = Encoding.GetEncoding("windows-1252")
+                foreach (string cookie in cookies)
+                {
+                    string newCookie = cookie;
+                    if (newCookie.IndexOf("Domain", StringComparison.CurrentCultureIgnoreCase) == -1)
+                        newCookie += "; Domain=" + Request.Url.Host;
 
-response.Cache.SetCacheability(HttpCacheability.NoCache)
-response.ContentType = "text/csv"
-response.AddHeader("Content-Disposition", "attachment;filename=" & fileName)
+                    if (newCookie.IndexOf("Path", StringComparison.CurrentCultureIgnoreCase) == -1)
+                        newCookie += "; Path=" + cookiePath;
+                    else if (Regex.IsMatch(newCookie, @"\b[Pp]ath=/;?\B"))
+                        newCookie = Regex.Replace(newCookie, @"\b[Pp]ath=/;?\B", "Path=" + cookiePath + (newCookie.IndexOf("Path=/;", StringComparison.CurrentCultureIgnoreCase) > -1? ";" : ""));
 
-Dim sb As New StringBuilder()
+                    if (newCookie.IndexOf("SameSite", StringComparison.CurrentCultureIgnoreCase) == -1)
+                        newCookie += "; SameSite=Lax";
 
-For i As Integer = 0 To gv.Columns.Count - 1
-    sb.Append($"{gv.Columns(i).HeaderText}{delimiter}")
-Next
-
-sb.AppendLine()
-
-For i As Integer = 0 To gv.Rows.Count - 1
-    For j As Integer = 0 To gv.Columns.Count - 1
-        Dim cellValue As String = gv.Rows(i).Cells(j).Text.Trim()
-        cellValue = cellValue.Replace("""", """""")
-
-        If Regex.IsMatch(cellValue, $"[{delimiter}""\n]") Then
-            cellValue = $"""{cellValue}"""
-        End If
-
-        sb.Append($"{cellValue}{delimiter}")
-    Next
-
-    sb.AppendLine()
-Next
-
-response.Write(sb.ToString())
-response.[End]()
+                    if (Request.IsSecureConnection && newCookie.IndexOf("Secure", StringComparison.CurrentCultureIgnoreCase) == -1)
+                        newCookie += "; Secure";
+                    
+                    Response.AppendHeader("Set-Cookie", newCookie);
+                }
+            }
+        }
